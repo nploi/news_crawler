@@ -1,19 +1,21 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
 import scrapy
 import os
 import json
-
+import json
+from codecs import open
 
 URL = 'https://vnexpress.net/'
 
 # Hash table chưa tên chủ đề, để tạo thư mục
 CATEGORYS = {
-    'giao-duc': 'Giáo dục',
+    'giao-duc': 'Giáo dục', #
     'suc-khoe': 'Sức khoẻ - Y tế',
-    'khoa-hoc': 'Khoa học – Công nghệ',
-    'so-hoa': 'Khoa học – Công nghệ',
-    'giai-tri': 'Giải trí',
-    'the-thao': 'Thể thao',
+    'khoa-hoc': 'Khoa học – Công nghệ',#
+    'giai-tri': 'Giải trí',#
+    'the-thao': 'Thể thao',#
     'doi-song': 'Đời sống',
     'du-lich': 'Du lịch'
 }
@@ -21,6 +23,7 @@ CATEGORYS = {
 class VnExpress(scrapy.Spider):
     name = "vnexpress"
     folder_path = "vnexpress"
+    page = "/p"
 
     start_urls = [
     ]
@@ -50,9 +53,6 @@ class VnExpress(scrapy.Spider):
     def start_requests(self):
         for url in self.start_urls:
             yield scrapy.Request(url=url, callback=self.parse_list_news)
-            for index in range(2,50):
-                yield scrapy.Request(url=url + '/p%s' % index, callback=self.parse_list_news)
-    
 
     def parse_list_news(self, response):
         for list_news in response.css("section section article.list_news"):
@@ -60,28 +60,37 @@ class VnExpress(scrapy.Spider):
             abs_url = response.urljoin(relative_url)
             # print(abs_url)
             yield scrapy.Request(abs_url, callback=self.parse_news)
+        
+        url = response.url;
+        next_page_url = response.css("section section div.pagination.mb10 > a.next::attr(href)").extract_first()
+        if "doi-song" in url:
+            next_page_url = response.css("section section div.pagination.mb10 > a.pagination_btn.pa_next.next::attr(href)").extract_first()
+
+        if next_page_url is not None:
+            yield scrapy.Request(response.urljoin(next_page_url), callback=self.parse_list_news)
 
     def parse_news(self, response):
         news = response.css("section section section");
+        items = response.url.split('/')
+
         # yield {
         #     'title': news.css("h1::text").extract(),
         #     'content': news.css("article p::text").getall(),
-        #     'link': response.url
+        #     'link': response.url,
         # }
+
         jsonData = {
             'title': news.css("h1::text").extract(),
             'content': news.css("article p::text").getall(),
-            'link': response.url
+            'link': response.url,
         }
 
-        print('Downdload: ' + response.url + '......');
-
-        items = response.url.split('/')
-        filename = '%s/%s' % (CATEGORYS[items[3]], items[4])
-        with open(self.folder_path+"/"+filename, 'wb') as f:
-            f.write(response.body)
-        filename = '%s/%s' % (CATEGORYS[items[3]], items[4].replace(".html", ".json"))
-        with open(self.folder_path+"/"+filename, 'wb') as f2:
-            f2.write(json.dumps(jsonData))
-        self.log('Saved file %s' % filename)
+        if len(items) >= 5: 
+            filename = '%s/%s' % (CATEGORYS[items[3]], items[4])
+            with open(self.folder_path+"/"+filename, 'wb') as f:
+                f.write(response.body)
+            filename = '%s/%s' % (CATEGORYS[items[3]], items[4].replace(".html", ".json"))
+            with open(self.folder_path+"/"+filename, 'w', encoding= 'utf-8') as fp:
+                json.dump(jsonData, fp, ensure_ascii= False)
+            self.log('Saved file %s' % filename)
         
