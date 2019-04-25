@@ -76,11 +76,11 @@ class VnExpress(scrapy.Spider):
         news = response.css("section section section");
         items = response.url.split('/')
 
-        # yield {
-        #     'title': news.css("h1::text").extract(),
-        #     'content': news.css("article p::text").getall(),
-        #     'link': response.url,
-        # }
+        yield {
+            'title': news.css("h1::text").extract(),
+            'content': news.css("article p::text").getall(),
+            'link': response.url,
+        }
 
         jsonData = {
             'title': news.css("h1::text").extract(),
@@ -90,11 +90,9 @@ class VnExpress(scrapy.Spider):
 
         if len(items) >= 5 and items[3] in CATEGORYS:
             self.count += 1
-            # filename = '%s/%s' % (CATEGORYS[items[3]], items[4])
-            # with open(self.folder_path+"/"+filename, 'wb') as f:
-            #     f.write(response.body)
-            filename = '%s/%s.json' % (CATEGORYS[items[3]], CATEGORYS[items[3]])
-            with open(self.folder_path+"/"+filename, 'a+', encoding= 'utf-8') as fp:
+            filename = '%s/%s-%s.txt' % (CATEGORYS[items[3]], CATEGORYS[items[3]], self.count)
+            with open(self.folder_path+"/"+filename, 'wb+', encoding= 'utf-8') as fp:
                 json.dump(jsonData, fp, ensure_ascii= False)
+
             self.log('Saved file %s' % filename)
         
