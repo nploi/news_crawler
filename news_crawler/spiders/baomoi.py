@@ -37,6 +37,7 @@ class BaoMoi(scrapy.Spider):
                 self.start_urls.append(URL % CATEGORY + '.epi');
 
     def start_requests(self):
+        print("Comming soon :D")
         for url in self.start_urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
@@ -51,4 +52,4 @@ class BaoMoi(scrapy.Spider):
                 'chu_de': a.css("::text").extract(),
                 'link': a.css("::attr(href)").extract()
             }
-            print(value)
+        print("Comming soon :D")
