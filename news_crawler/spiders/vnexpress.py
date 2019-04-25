@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import os
-import urlparse
+import json
+
 
 URL = 'https://vnexpress.net/'
+
 # Hash table chưa tên chủ đề, để tạo thư mục
 CATEGORYS = {
     'giao-duc': 'Giáo dục',
@@ -60,17 +62,17 @@ class VnExpress(scrapy.Spider):
             yield scrapy.Request(abs_url, callback=self.parse_news)
 
     def parse_news(self, response):
-        # news = response.css("section section section");
+        news = response.css("section section section");
         # yield {
         #     'title': news.css("h1::text").extract(),
         #     'content': news.css("article p::text").getall(),
         #     'link': response.url
         # }
-        # print ({
-        #     'title': news.css("h1::text").extract(),
-        #     'content': news.css("article p::text").getall(),
-        #     'link': response.url
-        # })
+        jsonData = {
+            'title': news.css("h1::text").extract(),
+            'content': news.css("article p::text").getall(),
+            'link': response.url
+        }
 
         print('Downdload: ' + response.url + '......');
 
@@ -78,5 +80,8 @@ class VnExpress(scrapy.Spider):
         filename = '%s/%s' % (CATEGORYS[items[3]], items[4])
         with open(self.folder_path+"/"+filename, 'wb') as f:
             f.write(response.body)
+        filename = '%s/%s' % (CATEGORYS[items[3]], items[4].replace(".html", ".json"))
+        with open(self.folder_path+"/"+filename, 'wb') as f2:
+            f2.write(json.dumps(jsonData))
         self.log('Saved file %s' % filename)
         
