@@ -16,7 +16,7 @@ News crawler là một công cụ giúp bạn có thể khai thác dữ liệu c
 
 #### Các trang web được tích hợp vào để khai thác
 * [VNEXPRESS](https://vnexpress.net/)
-* [BAOMOI](https://baomoi.com/) (comming soon)
+* [BÁO MỚI](https://baomoi.com/)
 
 #### Các chủ đề
 * Giáo dục
@@ -30,8 +30,8 @@ News crawler là một công cụ giúp bạn có thể khai thác dữ liệu c
 
 Web/Chủ đề| Giáo dục | Y tế | Khoa học – Công nghệ | Giải trí | hể thao | Sức khoẻ| Đời sống | Du lịch
 --- | --- | --- | --- |--- |--- |--- |--- |--- 
- [VNEXPRESS](https://vnexpress.net/) | OK | OK | OK | OK | OK | OK | OK | OK 
-[BAOMOI](https://baomoi.com/) | X | X | X | X | X | X | X | X 
+[VNEXPRESS](https://vnexpress.net/) | OK | OK | OK | OK | OK | OK | OK | OK 
+[BÁO MỚI](https://baomoi.com/) | OK | OK | OK | OK | OK | OK | OK | OK 
 
 
 ### Hướng đẫn chạy chương trình
@@ -57,7 +57,7 @@ Output sẽ là
 baomoi
 vnexpress
 ```
-Chọn vnexpress nhé, baomoi mình chưa tích hợp xong :)), bây giờ bạn có thể chọn chủ đề hoặc bỏ trống thì tool crawl hết chủ đề :v.
+Chọn vnexpress nhé :)), bây giờ bạn có thể chọn chủ đề hoặc bỏ trống thì tool crawl hết chủ đề :v.
 ```bash
 # nếu chạy command line này thì sẽ crawl hết chủ đề nhé
 scrapy crawl vnexpress -a category=the-thao -a limit=5
@@ -65,7 +65,7 @@ scrapy crawl vnexpress -a category=the-thao -a limit=5
 OK, chúc mừng bạn đã chạy thành công, hy vọng là vậy =]], vào thư mục `vnexpress/Thể thao/` và xem thành quả của mình nào :v
 
 Giải thích các tham số:
-- category: Chủ đề để crawl, có thể bỏ trống. Các chủ đề
+- `category`: Chủ đề để crawl, có thể bỏ trống. Các chủ đề
     * giao-duc
     * suc-khoe
     * khoa-hoc
@@ -73,6 +73,6 @@ Giải thích các tham số:
     * the-thao
     * doi-song
     * du-lich  
-- limit: Giới hạn số trang để crawl, có thể bỏ trống. 
+- `limit`: Giới hạn số trang để crawl, có thể bỏ trống.
 
-**Lưu ý là** : các tham số trên mình chỉ hổ trợ cho VnExpress
+**Lưu ý** : Đối với [Báo mới](https://baomoi.com ) thì không có tham số `limit` nhé
