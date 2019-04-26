@@ -1,15 +1,18 @@
 
 # news_crawler
 
-### Sinh viên: Nguyễn Phúc Lợi
-### MSSV: 1660321
-
 News crawler là một công cụ giúp bạn có thể khai thác dữ liệu của một trang tin tức
+
+## Tác giả: 
+- Nguyễn Phúc Lợi
+- 1660321
+- HCMUS
 
 #### Các chức năng
 * Theo website được tích hợp
 * Khai thác theo chủ đề
 * Tất cả chủ đề
+* Có thể giới hạn số trang
 
 #### Các trang web được tích hợp vào để khai thác
 * [VNEXPRESS](https://vnexpress.net/)
@@ -32,13 +35,14 @@ Web/Chủ đề| Giáo dục | Y tế | Khoa học – Công nghệ | Giải tr�
 
 
 ### Hướng đẫn chạy chương trình
+
+[Cài đặt scrapy](http://doc.scrapy.org/en/latest/intro/install.html) trước khi chạy
+
+Sau khi cài đặt xong bạn cần kiểm tra bằng lệnh sau
 ```bash
-# Cài đặt scrapy trước khi chạy
-# http://doc.scrapy.org/en/latest/intro/install.html
-# Sau khi cài đặt xong bạn cần kiểm tra bằng lệnh sau
 scrapy --version
 ```
-Clone repository này về đã rồi tiếp 
+Clone repository này về  nhé
 ```bash
 git clone https://github.com/nploi/news_crawler.git
 cd news_crawler
@@ -56,25 +60,19 @@ vnexpress
 Chọn vnexpress nhé, baomoi mình chưa tích hợp xong :)), bây giờ bạn có thể chọn chủ đề hoặc bỏ trống thì tool crawl hết chủ đề :v.
 ```bash
 # nếu chạy command line này thì sẽ crawl hết chủ đề nhé
-scrapy crawl vnexpress
+scrapy crawl vnexpress -a category=the-thao -a limit=5
 ```
-OK, chúc mừng bạn đã chạy thành công. hy vọng là vậy =]]
+OK, chúc mừng bạn đã chạy thành công, hy vọng là vậy =]], vào thư mục `vnexpress/Thể thao/` và xem thành quả của mình nào :v
 
-Tiếp theo, mình có các chủ đề trên rồi giờ thì chọn thử một cái để chày nào, sau đây là tên ánh xạ để rõ command line.
-``` bash
-# Giáo dục: giao-duc
-# Y tế & Sức khoẻ: suc-khoe 
-# Khoa học – Công nghệ: khoa-hoc
-# Giải trí: giai-tri
-# Thể thao: the-thao
-# Đời sống: doi-song
-# Du lịch: du-lich
+Giải thích các tham số:
+- category: Chủ đề để crawl, có thể bỏ trống. Các chủ đề
+    * giao-duc
+    * suc-khoe
+    * khoa-hoc
+    * giai-tri
+    * the-thao
+    * doi-song
+    * du-lich  
+- limit: Giới hạn số trang để crawl, có thể bỏ trống. 
 
-# Chắc là bạn đang thắt mắt tại sao trên kia 8 chủ đề mà dưới có 7, vì vnexpress không có y tế nên mình gọp lại thành Y tế & Sức khoẻ. 
-```
-Bây giờ thì rõ command line và chạy nào, ví dụ mình chọn thể thao
-```
-scrapy crawl vnexpress -a category=the-thao
-```
-
-Sao khi chạy bạn vào thư mục `vnexpress/Thể thao/` và xem thành quả của mình nào
+**Lưu ý là** : các tham số trên mình chỉ hổ trợ cho VnExpress
