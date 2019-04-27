@@ -59,7 +59,7 @@ scrapy crawl vnexpress -a category=the-thao -a limit=2
 ```
 Chúc mừng bạn đã chạy thành công, hy vọng là vậy =]], vào thư mục `vnexpress/Thể thao/` và xem thành quả của mình nào :v
 
-Bạn cũng có thể chạy lệnh như sao để xuất tất cả dữ liệu và một file `.json`
+Bạn cũng có thể chạy lệnh như sao để xuất tất cả dữ liệu vào một file `.json`
 
 ```bash
 scrapy crawl vnexpress -a category=the-thao -a limit=2 -o vnexpress.json
