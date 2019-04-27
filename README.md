@@ -1,7 +1,7 @@
 
 # news_crawler
 
-News crawler là một công cụ giúp bạn có thể khai thác dữ liệu của một trang tin tức
+News crawler là một công cụ giúp bạn có crawl dữ liệu của một trang tin tức
 
 ## Tác giả: 
 - Nguyễn Phúc Lợi
@@ -10,8 +10,8 @@ News crawler là một công cụ giúp bạn có thể khai thác dữ liệu c
 
 #### Các chức năng
 * Theo website được tích hợp
-* Khai thác theo chủ đề
-* Tất cả chủ đề
+* Crawl theo chủ đề
+* Crawl Tất cả chủ đề
 * Có thể giới hạn số trang
 
 #### Các trang web được tích hợp vào để khai thác
@@ -42,14 +42,10 @@ Sau khi cài đặt xong bạn cần kiểm tra bằng lệnh sau
 ```bash
 scrapy --version
 ```
-Clone repository này về  nhé
+Clone repository này về  nhé, tiếp theo rõ và chạy command line `scrapy list` để hiện thị danh sách website để  crawl
 ```bash
 git clone https://github.com/nploi/news_crawler.git
 cd news_crawler
-```
-Tiếp nha
-``` bash
-# Tiếp theo chạy lệnh như sau để hiện thị danh sách website để khai thác
 scrapy list
 ```
 Output sẽ là
@@ -57,12 +53,17 @@ Output sẽ là
 baomoi
 vnexpress
 ```
-Chọn vnexpress nhé :)), bây giờ bạn có thể chọn chủ đề hoặc bỏ trống thì tool crawl hết chủ đề :v.
+Chọn `vnexpress` hoặc `baomoi` nhé :))
 ```bash
-# nếu chạy command line này thì sẽ crawl hết chủ đề nhé
-scrapy crawl vnexpress -a category=the-thao -a limit=5
+scrapy crawl vnexpress -a category=the-thao -a limit=2
 ```
-OK, chúc mừng bạn đã chạy thành công, hy vọng là vậy =]], vào thư mục `vnexpress/Thể thao/` và xem thành quả của mình nào :v
+Chúc mừng bạn đã chạy thành công, hy vọng là vậy =]], vào thư mục `vnexpress/Thể thao/` và xem thành quả của mình nào :v
+
+Bạn cũng có thể chạy lệnh như sao để xuất tất cả dữ liệu và một file `.json`
+
+```bash
+scrapy crawl vnexpress -a category=the-thao -a limit=2 -o vnexpress.json
+```
 
 Giải thích các tham số:
 - `category`: Chủ đề để crawl, có thể bỏ trống. Các chủ đề
@@ -73,6 +74,4 @@ Giải thích các tham số:
     * the-thao
     * doi-song
     * du-lich  
-- `limit`: Giới hạn số trang để crawl, có thể bỏ trống.
-
-**Lưu ý** : Đối với [Báo mới](https://baomoi.com ) thì không có tham số `limit` nhé
+- `limit`: Giới hạn số trang để crawl, tốt nhất là nên có tham số này để k phải đợi lâu, có thể bỏ trống.

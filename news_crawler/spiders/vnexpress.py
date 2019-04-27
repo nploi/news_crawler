@@ -31,7 +31,7 @@ CATEGORIES_COUNTER = {
 }
 
 class VnExpress(scrapy.Spider):
-    '''Khai thác dữ liệu tin tức từ https://vnexpress.net website
+    '''Crawl tin tức từ https://vnexpress.net website
     ### Các tham số:
         category: Chủ đề để crawl, có thể bỏ trống. Các chủ đề
                  * giao-duc
@@ -98,9 +98,6 @@ class VnExpress(scrapy.Spider):
                     CATEGORIES_COUNTER[items[3]][1] = CATEGORIES_COUNTER[items[3]][1]+1
                     # Đệ qui để crawl trang kế tiếp
                     yield scrapy.Request(response.urljoin(next_page_url), callback=self.parse_list_news)
-            else:
-                page_count = 0
-                return
 
     def parse_news(self, response):
         news = response.css("section section section")
@@ -132,7 +129,7 @@ class VnExpress(scrapy.Spider):
             'description': news.css("p::text").extract_first()
         }
 
-        # yield jsonData
+        yield jsonData
 
         items = response.url.split('/')
 
