@@ -10,12 +10,12 @@ from datetime import datetime
 URL = 'https://vnexpress.net/'
 
 # Hash table chưa tên chủ đề, để tạo thư mục
-CATEGORYS = {
-    'giao-duc': 'Giáo dục', #
+CATEGORIES = {
+    'giao-duc': 'Giáo dục',
     'suc-khoe': 'Sức khoẻ - Y tế',
-    'khoa-hoc': 'Khoa học – Công nghệ',#
-    'giai-tri': 'Giải trí',#
-    'the-thao': 'Thể thao',#
+    'khoa-hoc': 'Khoa học - Công nghệ',
+    'giai-tri': 'Giải trí',
+    'the-thao': 'Thể thao',
     'doi-song': 'Đời sống',
     'du-lich': 'Du lịch'
 }
@@ -49,27 +49,24 @@ class VnExpress(scrapy.Spider):
         if not os.path.exists(self.folder_path):
             os.mkdir(self.folder_path)
 
-        if category in CATEGORYS:
-            folders_path = self.folder_path + '/' + CATEGORYS[category];
+        if category in CATEGORIES:
+            folders_path = self.folder_path + '/' + CATEGORIES[category];
             if not os.path.exists(folders_path):
                 os.makedirs(folders_path)
             self.start_urls = [URL + category]
         else:
-            for CATEGORY in CATEGORYS:
-                folders_path = self.folder_path + '/' + CATEGORYS[CATEGORY];
+            for CATEGORY in CATEGORIES:
+                folders_path = self.folder_path + '/' + CATEGORIES[CATEGORY];
                 if not os.path.exists(folders_path):
                     os.makedirs(folders_path)
                 self.start_urls.append(URL + CATEGORY);
 
     def start_requests(self):
         for url in self.start_urls:
-            self.page_count = 0
+            self.log('URL: %s' % url)
             yield scrapy.Request(url=url, callback=self.parse_list_news)
 
     def parse_list_news(self, response):
-        self.page_count = self.page_count + 1
-        if self.page_count > self.page_limit and self.page_limit is not None:
-            return
 
         section = response.css("section section")
         for list_news in section.css("article.list_news"):
@@ -85,28 +82,53 @@ class VnExpress(scrapy.Spider):
         if "du-lich" in url or "giai-tri" in url or "suc-khoe" in url:
             next_page_url = section.css("p.pagination.mb10 > a.next::attr(href)").extract_first()
         
-        # Đệ qui để crawl trang kế tiếp
-        if next_page_url is not None:
-            yield scrapy.Request(response.urljoin(next_page_url), callback=self.parse_list_news)
+        if self.page_count < self.page_limit or self.page_limit is None:
+            if next_page_url is not None:
+                self.page_count = self.page_count + 1
+                # Đệ qui để crawl trang kế tiếp
+                yield scrapy.Request(response.urljoin(next_page_url), callback=self.parse_list_news)
+        else:
+            self.page_count = 0
+            return
 
     def parse_news(self, response):
-        news = response.css("section section section");
+        news = response.css("section section section")
+        date = news.css("header span::text").extract_first()
+        if date is None:
+            date = response.css("section section header span::text").extract_first()
+
+        author = news.css("article p strong::text").extract_first()
+        if author is None:
+            author = news.css("p.Normal strong::text").extract_first()
+        if author is None:
+            author = response.css("section section p.Normal strong::text").extract_first()
+        title = news.css("h1::text").extract_first()
+        if title is None:
+            title = news.css("h1.title_news_detail.mb10::text").extract_first()
+        if title is None:
+            title = response.css("section section h1::text").extract_first()
+
+        content = news.css("article p::text").getall()
+        if content is None:
+            content = response.css("section section article p.Normal::text").getall()
 
         jsonData = {
-            'date': news.css("header span::text").extract_first(),
-            'title': news.css("h1::text").extract_first(),
+            'date': date,
+            'title': title,
             'link': response.url,
-            'content': news.css("article p::text").getall(),
+            'content': content,
+            'author': author,
+            'description': news.css("p::text").extract_first()
         }
 
-        yield jsonData
+        # yield jsonData
 
         items = response.url.split('/')
 
         # Write to file
-        if len(items) >= 5 and items[3] in CATEGORYS:
+        if len(items) >= 5 and items[3] in CATEGORIES:
             self.count += 1
-            filename = '%s/%s-%s.json' % (CATEGORYS[items[3]], CATEGORYS[items[3]], self.count)
+            filename = '%s/%s-%s.json' % (CATEGORIES[items[3]], CATEGORIES[items[3]], self.count)
             with open(self.folder_path+"/"+filename, 'wb', encoding= 'utf-8') as fp:
                 json.dump(jsonData, fp, ensure_ascii= False)
             self.log('Saved file %s' % filename)
