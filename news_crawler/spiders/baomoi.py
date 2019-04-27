@@ -9,11 +9,21 @@ URL = 'https://baomoi.com'
 CATEGORYS = {
     'giao-duc': 'Giáo dục',
     'suc-khoe-y-te': 'Sức khoẻ - Y tế',
-    'khoa-hoc-cong-nghe': 'Khoa học – Công nghệ',
+    'khoa-hoc': 'Khoa học - Công nghệ',
     'giai-tri': 'Giải trí',
     'the-thao': 'Thể thao',
     'doi-song': 'Đời sống',
     'du-lich': 'Du lịch'
+}
+
+CATEGORIES_COUNTER = {
+    'giao-duc': 0,
+    'suc-khoe': 0,
+    'khoa-hoc': 0,
+    'giai-tri': 0,
+    'the-thao': 0,
+    'doi-song': 0,
+    'du-lich': 0
 }
 
 class BaoMoi(scrapy.Spider):
@@ -22,7 +32,6 @@ class BaoMoi(scrapy.Spider):
 
     start_urls = [
     ]
-    count = 0
 
     def __init__(self, category=None, *args, **kwargs):
         super(BaoMoi, self).__init__(*args, **kwargs)
@@ -44,14 +53,12 @@ class BaoMoi(scrapy.Spider):
 
     def start_requests(self):
         for url in self.start_urls:
-            self.count = 0
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
         items = response.url.split('/')
         if len(items) >= 4:
             category = items[3].replace('.epi', '')
-            category = CATEGORYS[category]
 
         for timeline in response.css("div.wrapper.category_page div.main-content div.l-grid__main div.timeline.loadmore div"):
             
@@ -63,9 +70,8 @@ class BaoMoi(scrapy.Spider):
             }
             
             yield value
-
-            self.count += 1
-            filename = '%s/%s-%s.json' % (category, category, self.count)
+            CATEGORIES_COUNTER[category] = CATEGORIES_COUNTER[category] + 1
+            filename = '%s/%s-%s.json' % (CATEGORYS[category], CATEGORYS[category], CATEGORIES_COUNTER[category])
             with open(self.folder_path+"/"+filename, 'wb', encoding= 'utf-8') as fp:
                 json.dump(value, fp, ensure_ascii= False)
                 self.log('Saved file %s' % filename)
