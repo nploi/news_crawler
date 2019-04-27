@@ -3,6 +3,7 @@ import scrapy
 import os
 import json
 from codecs import open
+import re
 
 URL = 'https://baomoi.com'
 # Hash table chưa tên chủ đề, để tạo thư mục
@@ -60,25 +61,38 @@ class BaoMoi(scrapy.Spider):
 
     def parse(self, response):
         items = response.url.split('/')
+        category = None
         if len(items) >= 4:
             category = items[3].replace('.epi', '')
+        if category is None:
+            return
         gridMain = response.css("div.wrapper.category_page div.main-content div.l-grid__main")
         for timeline in gridMain.css("div.timeline.loadmore div"):
             
+            link = timeline.css("h4.story__heading a::attr(href)").extract_first()
+            if link is None:
+                link = timeline.css("a::attr(href)").extract_first()
+
+            title = timeline.css("h4.story__heading a::text").extract_first()
+            if title is None:
+                title = timeline.css("a.relate::text").extract_first()
+                # print('-----------')
+                # print(timeline.extract())
+                # print('-----------')
             value = {
-                'title': timeline.css("h4.story__heading a::text").extract_first(),
+                'title': title,
                 'source': timeline.css("div.story__meta a::text").extract_first(),
-                'link': '%s%s' % (URL ,timeline.css("h4.story__heading a::attr(href)").extract_first()),
+                'link': '%s%s' % (URL , link),
                 'date': timeline.css("div.story__meta time.time.friendly::attr(datetime)").extract()
             }
             
-            yield value
-            
+            # yield value
+
             CATEGORIES_COUNTER[category][0] = CATEGORIES_COUNTER[category][0] + 1
             filename = '%s/%s-%s.json' % (CATEGORIES[category], CATEGORIES[category], CATEGORIES_COUNTER[category][0])
             with open(self.folder_path + "/" + filename, 'wb', encoding= 'utf-8') as fp:
                 json.dump(value, fp, ensure_ascii= False)
-                self.log('Saved file %s' % filename)
+                # self.log('Saved file %s' % filename)
         
         # Lấy link trang kế tiếp
         url = response.url;
