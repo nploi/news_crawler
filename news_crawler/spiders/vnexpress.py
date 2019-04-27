@@ -20,6 +20,16 @@ CATEGORIES = {
     'du-lich': 'Du lịch'
 }
 
+CATEGORIES_COUNTER = {
+    'giao-duc': [0, 0],
+    'suc-khoe': [0, 0],
+    'khoa-hoc': [0, 0],
+    'giai-tri': [0, 0],
+    'the-thao': [0, 0],
+    'doi-song': [0, 0],
+    'du-lich': [0, 0]
+}
+
 class VnExpress(scrapy.Spider):
     '''Khai thác dữ liệu tin tức từ https://vnexpress.net website
     ### Các tham số:
@@ -36,8 +46,6 @@ class VnExpress(scrapy.Spider):
     name = "vnexpress"
     folder_path = "vnexpress"
     page_limit = None
-    page_count = 0
-    count = 0
     start_urls = [
     ]
 
@@ -82,14 +90,17 @@ class VnExpress(scrapy.Spider):
         if "du-lich" in url or "giai-tri" in url or "suc-khoe" in url:
             next_page_url = section.css("p.pagination.mb10 > a.next::attr(href)").extract_first()
         
-        if self.page_count < self.page_limit or self.page_limit is None:
-            if next_page_url is not None:
-                self.page_count = self.page_count + 1
-                # Đệ qui để crawl trang kế tiếp
-                yield scrapy.Request(response.urljoin(next_page_url), callback=self.parse_list_news)
-        else:
-            self.page_count = 0
-            return
+        items = response.url.split('/')
+
+        if len(items) >= 4 and items[3] in CATEGORIES:
+            if CATEGORIES_COUNTER[items[3]][1] < self.page_limit or self.page_limit is None:
+                if next_page_url is not None:
+                    CATEGORIES_COUNTER[items[3]][1] = CATEGORIES_COUNTER[items[3]][1]+1
+                    # Đệ qui để crawl trang kế tiếp
+                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.parse_list_news)
+            else:
+                page_count = 0
+                return
 
     def parse_news(self, response):
         news = response.css("section section section")
@@ -127,8 +138,8 @@ class VnExpress(scrapy.Spider):
 
         # Write to file
         if len(items) >= 5 and items[3] in CATEGORIES:
-            self.count += 1
-            filename = '%s/%s-%s.json' % (CATEGORIES[items[3]], CATEGORIES[items[3]], self.count)
+            CATEGORIES_COUNTER[items[3]][0] = CATEGORIES_COUNTER[items[3]][0]+1
+            filename = '%s/%s-%s.json' % (CATEGORIES[items[3]], CATEGORIES[items[3]], CATEGORIES_COUNTER[items[3]][0])
             with open(self.folder_path+"/"+filename, 'wb', encoding= 'utf-8') as fp:
                 json.dump(jsonData, fp, ensure_ascii= False)
             self.log('Saved file %s' % filename)
