@@ -9,7 +9,7 @@ News crawler là một công cụ giúp bạn có crawl dữ liệu của một 
 - HCMUS
 
 #### Các chức năng
-* Theo website được tích hợp
+* Crawl Theo website được tích hợp
 * Crawl theo chủ đề
 * Crawl Tất cả chủ đề
 * Có thể giới hạn số trang
