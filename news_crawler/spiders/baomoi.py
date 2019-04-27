@@ -76,9 +76,7 @@ class BaoMoi(scrapy.Spider):
             title = timeline.css("h4.story__heading a::text").extract_first()
             if title is None:
                 title = timeline.css("a.relate::text").extract_first()
-                # print('-----------')
-                # print(timeline.extract())
-                # print('-----------')
+
             value = {
                 'title': title,
                 'source': timeline.css("div.story__meta a::text").extract_first(),
@@ -86,20 +84,20 @@ class BaoMoi(scrapy.Spider):
                 'date': timeline.css("div.story__meta time.time.friendly::attr(datetime)").extract()
             }
             
-            # yield value
+            yield value
 
             CATEGORIES_COUNTER[category][0] = CATEGORIES_COUNTER[category][0] + 1
             filename = '%s/%s-%s.json' % (CATEGORIES[category], CATEGORIES[category], CATEGORIES_COUNTER[category][0])
             with open(self.folder_path + "/" + filename, 'wb', encoding= 'utf-8') as fp:
                 json.dump(value, fp, ensure_ascii= False)
-                # self.log('Saved file %s' % filename)
+                self.log('Saved file %s' % filename)
         
         # Lấy link trang kế tiếp
         url = response.url;
         next_page_url = gridMain.css("div.control span > a.control__next::attr(href)").extract_first()
 
         if len(items) >= 4 and category in CATEGORIES:
-            if CATEGORIES_COUNTER[category][1] < self.page_limit or self.page_limit is None:
+            if CATEGORIES_COUNTER[category][1] < self.page_limit - 1 or self.page_limit is None:
                 if next_page_url is not None:
                     CATEGORIES_COUNTER[category][1] = CATEGORIES_COUNTER[category][1] + 1
                     # Đệ qui để crawl trang kế tiếp

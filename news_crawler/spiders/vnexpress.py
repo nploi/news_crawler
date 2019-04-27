@@ -71,7 +71,6 @@ class VnExpress(scrapy.Spider):
 
     def start_requests(self):
         for url in self.start_urls:
-            self.log('URL: %s' % url)
             yield scrapy.Request(url=url, callback=self.parse_list_news)
 
     def parse_list_news(self, response):
@@ -93,9 +92,9 @@ class VnExpress(scrapy.Spider):
         items = response.url.split('/')
 
         if len(items) >= 4 and items[3] in CATEGORIES:
-            if CATEGORIES_COUNTER[items[3]][1] < self.page_limit or self.page_limit is None:
+            if CATEGORIES_COUNTER[items[3]][1] < self.page_limit - 1 or self.page_limit is None:
                 if next_page_url is not None:
-                    CATEGORIES_COUNTER[items[3]][1] = CATEGORIES_COUNTER[items[3]][1]+1
+                    CATEGORIES_COUNTER[items[3]][1] = CATEGORIES_COUNTER[items[3]][1] + 1
                     # Đệ qui để crawl trang kế tiếp
                     yield scrapy.Request(response.urljoin(next_page_url), callback=self.parse_list_news)
 
@@ -135,9 +134,9 @@ class VnExpress(scrapy.Spider):
 
         # Write to file
         if len(items) >= 5 and items[3] in CATEGORIES:
-            CATEGORIES_COUNTER[items[3]][0] = CATEGORIES_COUNTER[items[3]][0]+1
+            CATEGORIES_COUNTER[items[3]][0] = CATEGORIES_COUNTER[items[3]][0] + 1
             filename = '%s/%s-%s.json' % (CATEGORIES[items[3]], CATEGORIES[items[3]], CATEGORIES_COUNTER[items[3]][0])
             with open(self.folder_path+"/"+filename, 'wb', encoding= 'utf-8') as fp:
                 json.dump(jsonData, fp, ensure_ascii= False)
-            self.log('Saved file %s' % filename)
+                self.log('Saved file %s' % filename)
         
