@@ -10,6 +10,7 @@ URL = 'https://baomoi.com'
 CATEGORIES = {
     'giao-duc': 'Giáo dục',
     'suc-khoe-y-te': 'Sức khoẻ - Y tế',
+    'khoa-hoc': 'Khoa học',
     'khoa-hoc-cong-nghe': 'Khoa học - Công nghệ',
     'giai-tri': 'Giải trí',
     'the-thao': 'Thể thao',
@@ -20,6 +21,7 @@ CATEGORIES = {
 CATEGORIES_COUNTER = {
     'giao-duc': [0, 0],
     'suc-khoe-y-te': [0, 0],
+    'khoa-hoc': [0, 0],
     'khoa-hoc-cong-nghe': [0, 0],
     'giai-tri': [0, 0],
     'the-thao': [0, 0],
@@ -28,6 +30,20 @@ CATEGORIES_COUNTER = {
 }
 
 class BaoMoi(scrapy.Spider):
+    '''Crawl tin tức từ https://baomoi.com website
+    ### Các tham số:
+        category: Chủ đề để crawl, có thể bỏ trống. Các chủ đề
+                 * giao-duc
+                 * suc-khoe-y-te
+                 * khoa-hoc
+                 * khoa-hoc-cong-nghe
+                 * giai-tri
+                 * the-thao
+                 * doi-song
+                 * du-lich  
+        limit: Giới hạn số trang để crawl, có thể bỏ trống.
+    '''
+
     name = "baomoi"
     folder_path = "baomoi"
     page_limit = None
@@ -60,28 +76,35 @@ class BaoMoi(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
-        items = response.url.split('/')
-        category = None
-        if len(items) >= 4:
-            category = items[3].replace('.epi', '')
-        if category is None:
+        category = self.get_category_from_url(response.url)
+
+        if CATEGORIES_COUNTER[category][1] >= self.page_limit and self.page_limit is not None:
             return
+
+        # Lấy link trang kế tiếp
+        next_page_url = self.extract_next_page_url(response)
+
+        if category in CATEGORIES and next_page_url is not None:
+            CATEGORIES_COUNTER[category][1] = CATEGORIES_COUNTER[category][1] + 1
+            # Đệ qui để crawl trang kế tiếp
+            yield scrapy.Request(response.urljoin(next_page_url), callback=self.parse)
+        else:
+            return
+
+        # xử lý
         gridMain = response.css("div.wrapper.category_page div.main-content div.l-grid__main")
         for timeline in gridMain.css("div.timeline.loadmore div"):
             
-            link = timeline.css("h4.story__heading a::attr(href)").extract_first()
-            if link is None:
-                link = timeline.css("a::attr(href)").extract_first()
-
-            title = timeline.css("h4.story__heading a::text").extract_first()
-            if title is None:
-                title = timeline.css("a.relate::text").extract_first()
+            title = self.extract_title(timeline)
+            link = self.extract_link(timeline)
+            source = self.extract_source(timeline)
+            date = self.extract_date(timeline)
 
             value = {
                 'title': title,
-                'source': timeline.css("div.story__meta a::text").extract_first(),
+                'source': source,
                 'link': '%s%s' % (URL , link),
-                'date': timeline.css("div.story__meta time.time.friendly::attr(datetime)").extract()
+                'date': date
             }
             
             yield value
@@ -92,13 +115,35 @@ class BaoMoi(scrapy.Spider):
                 json.dump(value, fp, ensure_ascii= False)
                 self.log('Saved file %s' % filename)
         
-        # Lấy link trang kế tiếp
-        url = response.url;
-        next_page_url = gridMain.css("div.control span > a.control__next::attr(href)").extract_first()
 
-        if len(items) >= 4 and category in CATEGORIES:
-            if CATEGORIES_COUNTER[category][1] < self.page_limit - 1 or self.page_limit is None:
-                if next_page_url is not None:
-                    CATEGORIES_COUNTER[category][1] = CATEGORIES_COUNTER[category][1] + 1
-                    # Đệ qui để crawl trang kế tiếp
-                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.parse)
+    def get_category_from_url(self, url):
+        items = url.split('/')
+        category = None
+        if len(items) >= 4:
+            category = items[3].replace('.epi', '')
+        return category
+
+    def extract_title(self, timeline):
+        title = timeline.css("h4.story__heading a::text").extract_first()
+        if title is None:
+            title = timeline.css("a.relate::text").extract_first()
+        return title
+
+    def extract_link(self, timeline):
+        link = timeline.css("h4.story__heading a::attr(href)").extract_first()
+        if link is None:
+            link = timeline.css("a::attr(href)").extract_first()
+        return link
+
+    def extract_source(self, timeline):
+        source = timeline.css("div.story__meta a::text").extract_first()
+        return source
+
+    def extract_date(self, timeline):
+        date = timeline.css("div.story__meta time.time.friendly::attr(datetime)").extract()
+        return date
+    
+    def extract_next_page_url(self, response):
+        gridMain = response.css("div.wrapper.category_page div.main-content div.l-grid__main")
+        next_page_url = gridMain.css("div.control span > a.control__next::attr(href)").extract_first()
+        return next_page_url
