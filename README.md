@@ -34,7 +34,7 @@ Web/Chủ đề| Giáo dục | Y tế | Khoa học – Công nghệ | Giải tr�
 [BÁO MỚI](https://baomoi.com/) | OK | OK | OK | OK | OK | OK | OK | OK 
 
 
-### Hướng đẫn chạy chương trình
+### Hướng đẫn
 
 [Cài đặt scrapy](http://doc.scrapy.org/en/latest/intro/install.html) trước khi chạy
 
