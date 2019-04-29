@@ -8,17 +8,17 @@ News crawler là một công cụ giúp bạn có  crawl dữ liệu của một
 - 1660321
 - Đại học khoa học tự nhiên TP.HCM
 
-#### Các chức năng
+#### Chức năng
 * Crawl Theo website được tích hợp
 * Crawl theo chủ đề
 * Crawl Tất cả chủ đề
 * Có thể giới hạn số trang
 
-#### Các trang web được tích hợp vào để khai thác
+#### Trang web được tích hợp vào để khai thác
 * [VNEXPRESS](https://vnexpress.net/)
 * [BÁO MỚI](https://baomoi.com/)
 
-#### Các chủ đề
+#### Chủ đề
 * Giáo dục
 * Y tế
 * Khoa học
