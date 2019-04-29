@@ -14,7 +14,7 @@ News crawler là một công cụ giúp bạn có  crawl dữ liệu của một
 * Crawl tất cả chủ đề
 * Có thể giới hạn số trang
 
-#### Trang web được tích hợp vào để khai thác
+#### Trang web được tích hợp vào để crawl
 * [VNEXPRESS](https://vnexpress.net/)
 * [BÁO MỚI](https://baomoi.com/)
 
