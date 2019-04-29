@@ -6,6 +6,7 @@ import os
 import json
 from codecs import open
 from datetime import datetime
+import re
 
 URL = 'https://vnexpress.net/'
 
@@ -77,15 +78,15 @@ class VnExpress(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse_list_news)
 
     def parse_list_news(self, response):
-        items = response.url.split('/')
+        category = self.get_category_from_url(response.url)
 
-        if (CATEGORIES_COUNTER[items[3]][1] >= self.page_limit or self.page_limit <= 0) and self.page_limit is not None:
+        if (CATEGORIES_COUNTER[category][1] >= self.page_limit or self.page_limit <= 0) and self.page_limit is not None:
             return
 
         next_page_url = self.extract_next_page_url(response)
 
-        if len(items) >= 4 and items[3] in CATEGORIES and next_page_url is None:
-            CATEGORIES_COUNTER[items[3]][1] = CATEGORIES_COUNTER[items[3]][1] + 1
+        if category in CATEGORIES and next_page_url is not None:
+            CATEGORIES_COUNTER[category][1] = CATEGORIES_COUNTER[category][1] + 1
             # Đệ qui để crawl trang kế tiếp
             yield scrapy.Request(response.urljoin(next_page_url), callback=self.parse_list_news)
         else:
@@ -127,6 +128,14 @@ class VnExpress(scrapy.Spider):
                 json.dump(jsonData, fp, ensure_ascii= False)
                 self.log('Saved file %s' % filename)
     
+
+    def get_category_from_url(self, url):
+        items = url.split('/')
+        category = None
+        if len(items) >= 4:
+            category = re.sub(r'-p[0-9]+', '', items[3])
+        return category
+
     def extract_news(self, response):
 
         date = self.extract_date(response)
