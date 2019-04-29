@@ -181,5 +181,4 @@ class VnExpress(scrapy.Spider):
             author = news.css("p.Normal strong::text").extract_first()
         if author is None:
             author = response.css("section section p.Normal strong::text").extract_first()
-        
         return author
