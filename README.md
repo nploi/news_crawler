@@ -6,7 +6,7 @@ News crawler là một công cụ giúp bạn có crawl dữ liệu của một 
 ## Tác giả: 
 - Nguyễn Phúc Lợi
 - 1660321
-- HCMUS
+- Đại học khoa học tự nhiên TP.HCM
 
 #### Các chức năng
 * Crawl Theo website được tích hợp
@@ -21,17 +21,18 @@ News crawler là một công cụ giúp bạn có crawl dữ liệu của một 
 #### Các chủ đề
 * Giáo dục
 * Y tế
-* Khoa học – Công nghệ
+* Khoa học
+* Công nghệ
 * Giải trí
 * Thể thao
 * Sức khoẻ
 * Đời sống
 * Du lịch
 
-Web/Chủ đề| Giáo dục | Y tế | Khoa học – Công nghệ | Giải trí | hể thao | Sức khoẻ| Đời sống | Du lịch
---- | --- | --- | --- |--- |--- |--- |--- |--- 
-[VNEXPRESS](https://vnexpress.net/) | OK | OK | OK | OK | OK | OK | OK | OK 
-[BÁO MỚI](https://baomoi.com/) | OK | OK | OK | OK | OK | OK | OK | OK 
+Web/Chủ đề| Giáo dục | Y tế | Khoa học | Công nghệ | Giải trí | hể thao | Sức khoẻ| Đời sống | Du lịch
+--- | --- | --- | --- |--- |--- |--- |--- |---|--- 
+[VNEXPRESS](https://vnexpress.net/) | OK | OK | OK | OK | OK | OK | OK | OK | OK
+[BÁO MỚI](https://baomoi.com/) | OK | OK | OK | OK | OK | OK | OK | OK | OK
 
 
 ### Hướng đẫn
@@ -73,5 +74,6 @@ Giải thích các tham số:
     * giai-tri
     * the-thao
     * doi-song
-    * du-lich  
+    * du-lich
 - `limit`: Giới hạn số trang để crawl, tốt nhất là nên có tham số này để k phải đợi lâu, có thể bỏ trống.
+
