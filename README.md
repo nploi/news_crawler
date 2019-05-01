@@ -1,7 +1,7 @@
 
 # news_crawler
 
-News crawler là một công cụ giúp bạn có  crawl dữ liệu của một trang tin tức
+News crawler là một công cụ giúp bạn có  crawl dữ liệu các website tin tức
 
 ## Tác giả: 
 - Nguyễn Phúc Lợi
