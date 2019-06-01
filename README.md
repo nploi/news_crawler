@@ -4,9 +4,7 @@
 News crawler là một công cụ giúp bạn có  crawl dữ liệu các website tin tức
 
 ## Tác giả: 
-- Nguyễn Phúc Lợi
-- 1660321
-- Đại học khoa học tự nhiên TP.HCM
+- [Nguyễn Phúc Lợi](https://github.com/nploi)
 
 #### Chức năng
 * Crawl theo website được tích hợp
