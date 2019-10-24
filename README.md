@@ -36,6 +36,9 @@ Web/Chủ đề| Giáo dục | Y tế | Khoa học | Công nghệ | Giải trí 
 ### Hướng đẫn
 
 [Cài đặt scrapy](http://doc.scrapy.org/en/latest/intro/install.html) trước khi chạy
+```bash
+pip install Scrapy
+```
 
 Sau khi cài đặt xong bạn cần kiểm tra bằng lệnh sau
 ```bash
